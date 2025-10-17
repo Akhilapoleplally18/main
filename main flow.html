@@ -1,5 +1,5 @@
 class User:
-    def _init_(self, user_id, pin):
+    def __init__(self, user_id, pin):   # ✅ fixed constructor
         self.user_id = user_id
         self.pin = pin
         self.account_balance = 0
@@ -26,12 +26,14 @@ class Transaction:
         if amount > 0 and amount <= sender.account_balance:
             sender.account_balance -= amount
             receiver.account_balance += amount
-            return f"Transfer successful. New balance for {sender.user_id}: ${sender.account_balance:.2f}, New balance for {receiver.user_id}: ${receiver.account_balance:.2f}"
+            return (f"Transfer successful.\n"
+                    f"New balance for {sender.user_id}: ${sender.account_balance:.2f}\n"
+                    f"New balance for {receiver.user_id}: ${receiver.account_balance:.2f}")
         else:
             return "Invalid transfer amount or insufficient balance."
 
 class TransactionHistory:
-    def _init_(self):
+    def __init__(self):   # ✅ fixed constructor
         self.history = []
 
     def add_transaction(self, transaction):
@@ -41,7 +43,7 @@ class TransactionHistory:
         return self.history
 
 class ATMInterface:
-    def _init_(self, user):
+    def __init__(self, user):  # ✅ fixed constructor
         self.user = user
         self.transaction_history = TransactionHistory()
 
@@ -61,34 +63,41 @@ class ATMInterface:
             if choice == '1':
                 amount = float(input("Enter the withdrawal amount: "))
                 result = Transaction.withdraw(self.user, amount)
-                self.transaction_history.add_transaction(f"Withdrawal: ${amount:.2f}")
+                if "successful" in result:
+                    self.transaction_history.add_transaction(f"Withdrawal: ${amount:.2f}")
                 print(result)
+
             elif choice == '2':
                 amount = float(input("Enter the deposit amount: "))
                 result = Transaction.deposit(self.user, amount)
-                self.transaction_history.add_transaction(f"Deposit: ${amount:.2f}")
+                if "successful" in result:
+                    self.transaction_history.add_transaction(f"Deposit: ${amount:.2f}")
                 print(result)
+
             elif choice == '3':
                 receiver_id = input("Enter the recipient's user ID: ")
                 amount = float(input("Enter the transfer amount: "))
                 receiver = users.get(receiver_id)
                 if receiver:
                     result = Transaction.transfer(self.user, receiver, amount)
-                    self.transaction_history.add_transaction(f"Transfer to {receiver_id}: ${amount:.2f}")
+                    if "successful" in result:
+                        self.transaction_history.add_transaction(f"Transfer to {receiver_id}: ${amount:.2f}")
                     print(result)
                 else:
                     print("Recipient not found.")
+
             elif choice == '4':
                 print("\nTransaction History:")
                 for transaction in self.transaction_history.get_history():
                     print(transaction)
+
             elif choice == '5':
                 print("\nThank you for using the ATM. Goodbye!")
                 break
             else:
                 print("\nInvalid choice. Please try again.")
 
-if _name_ == "_main_":
+if __name__ == "__main__":  # ✅ fixed entry point
     users = {
         "user1": User("user1", "1234"),
         "user2": User("user2", "5678"),
@@ -96,7 +105,7 @@ if _name_ == "_main_":
 
     user_id = input("Enter your user ID: ")
     pin = input("Enter your PIN: ")
-    
+
     user = users.get(user_id)
     if user and user.pin == pin:
         atm_interface = ATMInterface(user)
